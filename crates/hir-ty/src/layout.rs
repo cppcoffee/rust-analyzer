@@ -177,18 +177,21 @@ pub fn layout_of_ty_query(
         .unwrap_or(ty.as_ref());
     let result = match ty.kind() {
         TyKind::Adt(def, args) => {
-            if let hir_def::AdtId::StructId(s) = def.inner().id {
-                let repr = AttrFlags::repr(db, s.into()).unwrap_or_default();
-                if repr.simd() {
-                    return layout_of_simd_ty(
-                        db,
-                        s,
-                        repr.packed(),
-                        &args,
-                        trait_env.as_ref(),
-                        &target,
-                    );
+            match def.inner().id {
+                hir_def::AdtId::StructId(s) => {
+                    let repr = AttrFlags::repr(db, s.into()).unwrap_or_default();
+                    if repr.simd() {
+                        return layout_of_simd_ty(
+                            db,
+                            s,
+                            repr.packed(),
+                            &args,
+                            trait_env.as_ref(),
+                            &target,
+                        );
+                    }
                 }
+                _ => {}
             }
             return db.layout_of_adt(def.inner().id, args.store(), trait_env);
         }

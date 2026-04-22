@@ -480,8 +480,11 @@ mod tests {
         // the fixed-up tree should not contain braces as punct
         // FIXME: should probably instead check that it's a valid punctuation character
         for x in tt.token_trees().iter_flat_tokens() {
-            if let ::tt::TokenTree::Leaf(::tt::Leaf::Punct(punct)) = x {
-                assert!(!matches!(punct.char, '{' | '}' | '(' | ')' | '[' | ']'))
+            match x {
+                ::tt::TokenTree::Leaf(::tt::Leaf::Punct(punct)) => {
+                    assert!(!matches!(punct.char, '{' | '}' | '(' | ')' | '[' | ']'))
+                }
+                _ => (),
             }
         }
 

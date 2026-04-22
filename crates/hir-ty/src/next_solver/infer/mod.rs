@@ -649,8 +649,11 @@ impl<'db> InferCtxt<'db> {
         // effects as well.
         let r_a = self.shallow_resolve(predicate.skip_binder().a);
         let r_b = self.shallow_resolve(predicate.skip_binder().b);
-        if let (TyKind::Infer(InferTy::TyVar(a_vid)), TyKind::Infer(InferTy::TyVar(b_vid))) = (r_a.kind(), r_b.kind()) {
-            return Err((a_vid, b_vid));
+        match (r_a.kind(), r_b.kind()) {
+            (TyKind::Infer(InferTy::TyVar(a_vid)), TyKind::Infer(InferTy::TyVar(b_vid))) => {
+                return Err((a_vid, b_vid));
+            }
+            _ => {}
         }
 
         self.enter_forall(predicate, |SubtypePredicate { a_is_expected, a, b }| {

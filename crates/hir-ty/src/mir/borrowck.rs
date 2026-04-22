@@ -231,31 +231,34 @@ fn moved_out_of_ref<'db>(
                 | StatementKind::Nop => (),
             }
         }
-        if let Some(terminator) = &block.terminator { match &terminator.kind {
-            TerminatorKind::SwitchInt { discr, .. } => for_operand(discr, terminator.span),
-            TerminatorKind::FalseEdge { .. }
-            | TerminatorKind::FalseUnwind { .. }
-            | TerminatorKind::Goto { .. }
-            | TerminatorKind::UnwindResume
-            | TerminatorKind::CoroutineDrop
-            | TerminatorKind::Abort
-            | TerminatorKind::Return
-            | TerminatorKind::Unreachable
-            | TerminatorKind::Drop { .. } => (),
-            TerminatorKind::DropAndReplace { value, .. } => {
-                for_operand(value, terminator.span);
-            }
-            TerminatorKind::Call { func, args, .. } => {
-                for_operand(func, terminator.span);
-                args.iter().for_each(|it| for_operand(it, terminator.span));
-            }
-            TerminatorKind::Assert { cond, .. } => {
-                for_operand(cond, terminator.span);
-            }
-            TerminatorKind::Yield { value, .. } => {
-                for_operand(value, terminator.span);
-            }
-        } }
+        match &block.terminator {
+            Some(terminator) => match &terminator.kind {
+                TerminatorKind::SwitchInt { discr, .. } => for_operand(discr, terminator.span),
+                TerminatorKind::FalseEdge { .. }
+                | TerminatorKind::FalseUnwind { .. }
+                | TerminatorKind::Goto { .. }
+                | TerminatorKind::UnwindResume
+                | TerminatorKind::CoroutineDrop
+                | TerminatorKind::Abort
+                | TerminatorKind::Return
+                | TerminatorKind::Unreachable
+                | TerminatorKind::Drop { .. } => (),
+                TerminatorKind::DropAndReplace { value, .. } => {
+                    for_operand(value, terminator.span);
+                }
+                TerminatorKind::Call { func, args, .. } => {
+                    for_operand(func, terminator.span);
+                    args.iter().for_each(|it| for_operand(it, terminator.span));
+                }
+                TerminatorKind::Assert { cond, .. } => {
+                    for_operand(cond, terminator.span);
+                }
+                TerminatorKind::Yield { value, .. } => {
+                    for_operand(value, terminator.span);
+                }
+            },
+            None => (),
+        }
     }
     result.shrink_to_fit();
     result
@@ -316,31 +319,34 @@ fn partially_moved<'db>(
                 | StatementKind::Nop => (),
             }
         }
-        if let Some(terminator) = &block.terminator { match &terminator.kind {
-            TerminatorKind::SwitchInt { discr, .. } => for_operand(discr, terminator.span),
-            TerminatorKind::FalseEdge { .. }
-            | TerminatorKind::FalseUnwind { .. }
-            | TerminatorKind::Goto { .. }
-            | TerminatorKind::UnwindResume
-            | TerminatorKind::CoroutineDrop
-            | TerminatorKind::Abort
-            | TerminatorKind::Return
-            | TerminatorKind::Unreachable
-            | TerminatorKind::Drop { .. } => (),
-            TerminatorKind::DropAndReplace { value, .. } => {
-                for_operand(value, terminator.span);
-            }
-            TerminatorKind::Call { func, args, .. } => {
-                for_operand(func, terminator.span);
-                args.iter().for_each(|it| for_operand(it, terminator.span));
-            }
-            TerminatorKind::Assert { cond, .. } => {
-                for_operand(cond, terminator.span);
-            }
-            TerminatorKind::Yield { value, .. } => {
-                for_operand(value, terminator.span);
-            }
-        } }
+        match &block.terminator {
+            Some(terminator) => match &terminator.kind {
+                TerminatorKind::SwitchInt { discr, .. } => for_operand(discr, terminator.span),
+                TerminatorKind::FalseEdge { .. }
+                | TerminatorKind::FalseUnwind { .. }
+                | TerminatorKind::Goto { .. }
+                | TerminatorKind::UnwindResume
+                | TerminatorKind::CoroutineDrop
+                | TerminatorKind::Abort
+                | TerminatorKind::Return
+                | TerminatorKind::Unreachable
+                | TerminatorKind::Drop { .. } => (),
+                TerminatorKind::DropAndReplace { value, .. } => {
+                    for_operand(value, terminator.span);
+                }
+                TerminatorKind::Call { func, args, .. } => {
+                    for_operand(func, terminator.span);
+                    args.iter().for_each(|it| for_operand(it, terminator.span));
+                }
+                TerminatorKind::Assert { cond, .. } => {
+                    for_operand(cond, terminator.span);
+                }
+                TerminatorKind::Yield { value, .. } => {
+                    for_operand(value, terminator.span);
+                }
+            },
+            None => (),
+        }
     }
     result.shrink_to_fit();
     result
@@ -364,20 +370,23 @@ fn borrow_regions(db: &dyn HirDatabase, body: &MirBody) -> Vec<BorrowRegion> {
                     });
             }
         }
-        if let Some(terminator) = &block.terminator { match &terminator.kind {
-            TerminatorKind::FalseEdge { .. }
-            | TerminatorKind::FalseUnwind { .. }
-            | TerminatorKind::Goto { .. }
-            | TerminatorKind::UnwindResume
-            | TerminatorKind::CoroutineDrop
-            | TerminatorKind::Abort
-            | TerminatorKind::Return
-            | TerminatorKind::Unreachable
-            | TerminatorKind::Drop { .. } => (),
-            TerminatorKind::DropAndReplace { .. } => {}
-            TerminatorKind::Call { .. } => {}
-            _ => (),
-        } }
+        match &block.terminator {
+            Some(terminator) => match &terminator.kind {
+                TerminatorKind::FalseEdge { .. }
+                | TerminatorKind::FalseUnwind { .. }
+                | TerminatorKind::Goto { .. }
+                | TerminatorKind::UnwindResume
+                | TerminatorKind::CoroutineDrop
+                | TerminatorKind::Abort
+                | TerminatorKind::Return
+                | TerminatorKind::Unreachable
+                | TerminatorKind::Drop { .. } => (),
+                TerminatorKind::DropAndReplace { .. } => {}
+                TerminatorKind::Call { .. } => {}
+                _ => (),
+            },
+            None => (),
+        }
     }
 
     borrows.into_values().collect()

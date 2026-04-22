@@ -201,15 +201,18 @@ fn check_actions(#[rust_analyzer::rust_fixture] ra_fixture: &str, expect: Expect
         .unwrap()
         .unwrap();
     // stub out ranges into minicore as they can change every now and then
-    hover.info.actions.iter_mut().for_each(|action| if let super::HoverAction::GoToType(act) = action { act.iter_mut().for_each(|data| {
-        if data.nav.file_id == file_id {
-            return;
-        }
-        data.nav.full_range = TextRange::empty(span::TextSize::new(!0));
-        if let Some(range) = &mut data.nav.focus_range {
-            *range = TextRange::empty(span::TextSize::new(!0));
-        }
-    }) });
+    hover.info.actions.iter_mut().for_each(|action| match action {
+        super::HoverAction::GoToType(act) => act.iter_mut().for_each(|data| {
+            if data.nav.file_id == file_id {
+                return;
+            }
+            data.nav.full_range = TextRange::empty(span::TextSize::new(!0));
+            if let Some(range) = &mut data.nav.focus_range {
+                *range = TextRange::empty(span::TextSize::new(!0));
+            }
+        }),
+        _ => (),
+    });
     expect.assert_debug_eq(&hover.info.actions)
 }
 
@@ -226,15 +229,18 @@ fn check_hover_range_actions(#[rust_analyzer::rust_fixture] ra_fixture: &str, ex
         .unwrap()
         .unwrap();
     // stub out ranges into minicore as they can change every now and then
-    hover.info.actions.iter_mut().for_each(|action| if let super::HoverAction::GoToType(act) = action { act.iter_mut().for_each(|data| {
-        if data.nav.file_id == range.file_id {
-            return;
-        }
-        data.nav.full_range = TextRange::empty(span::TextSize::new(!0));
-        if let Some(range) = &mut data.nav.focus_range {
-            *range = TextRange::empty(span::TextSize::new(!0));
-        }
-    }) });
+    hover.info.actions.iter_mut().for_each(|action| match action {
+        super::HoverAction::GoToType(act) => act.iter_mut().for_each(|data| {
+            if data.nav.file_id == range.file_id {
+                return;
+            }
+            data.nav.full_range = TextRange::empty(span::TextSize::new(!0));
+            if let Some(range) = &mut data.nav.focus_range {
+                *range = TextRange::empty(span::TextSize::new(!0));
+            }
+        }),
+        _ => (),
+    });
     expect.assert_debug_eq(&hover.info.actions);
 }
 
