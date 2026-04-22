@@ -98,7 +98,7 @@ impl RaFixtureAnalysis {
             attrs.filter_map(|attr| attr.as_simple_path()).any(|path| {
                 path.segments()
                     .zip(["rust_analyzer", "rust_fixture"])
-                    .all(|(seg, name)| seg.name_ref().map_or(false, |nr| nr.text() == name))
+                    .all(|(seg, name)| seg.name_ref().is_some_and(|nr| nr.text() == name))
             })
         });
         if !has_rust_fixture_attr {

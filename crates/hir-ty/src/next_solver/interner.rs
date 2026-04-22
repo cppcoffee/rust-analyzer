@@ -1555,7 +1555,7 @@ impl<'db> Interner for DbInterner<'db> {
 
     fn is_lang_item(self, def_id: Self::DefId, lang_item: SolverLangItem) -> bool {
         self.as_lang_item(def_id)
-            .map_or(false, |l| std::mem::discriminant(&l) == std::mem::discriminant(&lang_item))
+            .is_some_and(|l| std::mem::discriminant(&l) == std::mem::discriminant(&lang_item))
     }
 
     fn is_trait_lang_item(self, def_id: Self::TraitId, lang_item: SolverTraitLangItem) -> bool {
@@ -1601,7 +1601,7 @@ impl<'db> Interner for DbInterner<'db> {
     fn is_adt_lang_item(self, def_id: Self::AdtId, lang_item: SolverAdtLangItem) -> bool {
         // FIXME: derive PartialEq on SolverTraitLangItem
         self.as_adt_lang_item(def_id)
-            .map_or(false, |l| std::mem::discriminant(&l) == std::mem::discriminant(&lang_item))
+            .is_some_and(|l| std::mem::discriminant(&l) == std::mem::discriminant(&lang_item))
     }
 
     fn as_lang_item(self, def_id: Self::DefId) -> Option<SolverLangItem> {
@@ -2169,7 +2169,7 @@ impl<'db> Interner for DbInterner<'db> {
     }
 
     fn is_default_trait(self, def_id: Self::TraitId) -> bool {
-        self.as_trait_lang_item(def_id).map_or(false, |l| matches!(l, SolverTraitLangItem::Sized))
+        self.as_trait_lang_item(def_id).is_some_and(|l| matches!(l, SolverTraitLangItem::Sized))
     }
 
     fn trait_is_coinductive(self, trait_: Self::TraitId) -> bool {

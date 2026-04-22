@@ -148,7 +148,7 @@ fn gen_method(acc: &mut Assists, ctx: &AssistContext<'_>) -> Option<()> {
 
     let enclosing_impl = ctx.find_node_at_offset::<ast::Impl>();
     let cursor_impl = enclosing_impl.filter(|impl_| {
-        ctx.sema.to_def(impl_).map_or(false, |def| def.self_ty(ctx.sema.db).as_adt() == Some(adt))
+        ctx.sema.to_def(impl_).is_some_and(|def| def.self_ty(ctx.sema.db).as_adt() == Some(adt))
     });
 
     let (impl_, file) = if let Some(impl_) = cursor_impl {

@@ -318,7 +318,7 @@ impl CrateWorkspaceData {
             pre: Prerelease::EMPTY,
             build: BuildMetadata::EMPTY,
         };
-        self.toolchain.as_ref().map_or(false, |v| *v >= VERSION_187)
+        self.toolchain.as_ref().is_some_and(|v| *v >= VERSION_187)
     }
 }
 
