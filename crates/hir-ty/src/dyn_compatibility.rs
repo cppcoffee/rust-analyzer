@@ -479,7 +479,7 @@ fn receiver_is_dispatchable<'db>(
     let infcx = interner.infer_ctxt().build(TypingMode::non_body_analysis());
     // the receiver is dispatchable iff the obligation holds
     let res = next_trait_solve_in_ctxt(&infcx, goal);
-    res.map_or(false, |res| matches!(res.1, rustc_type_ir::solve::Certainty::Yes))
+    res.is_ok_and(|res| matches!(res.1, rustc_type_ir::solve::Certainty::Yes))
 }
 
 fn receiver_for_self_ty<'db>(

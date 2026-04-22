@@ -135,7 +135,7 @@ impl ProcMacroServerProcess {
     ) -> io::Result<ProcMacroServerProcess> {
         const VERSION: Version = Version::new(1, 93, 0);
         // we do `>` for nightly as this started working in the middle of the 1.93 nightly release, so we dont want to break on half of the nightlies
-        let has_working_format_flag = version.map_or(false, |v| {
+        let has_working_format_flag = version.is_some_and(|v| {
             if v.pre.as_str() == "nightly" { *v > VERSION } else { *v >= VERSION }
         });
 

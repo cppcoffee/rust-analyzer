@@ -197,31 +197,28 @@ pub(crate) fn generate_new(acc: &mut Assists, ctx: &AssistContext<'_>) -> Option
         if let Some(fn_) = contain_fn.descendants().find_map(ast::Fn::cast)
             && let Some(cap) = ctx.config.snippet_cap
         {
-            match strukt.kind() {
-                StructKind::Tuple(_) => {
-                    let struct_args = fn_
-                        .body()
-                        .unwrap()
-                        .syntax()
-                        .descendants()
-                        .filter(|it| syntax::ast::ArgList::can_cast(it.kind()))
-                        .flat_map(|args| args.children())
-                        .filter(|it| syntax::ast::PathExpr::can_cast(it.kind()))
-                        .enumerate()
-                        .filter_map(|(i, node)| {
-                            if trivial_constructors[i].is_none() { Some(node) } else { None }
-                        });
-                    if let Some(fn_params) = fn_.param_list() {
-                        for (struct_arg, fn_param) in struct_args.zip(fn_params.params()) {
-                            if let Some(fn_pat) = fn_param.pat() {
-                                let fn_pat = fn_pat.syntax().clone();
-                                let placeholder = builder.make_placeholder_snippet(cap);
-                                editor.add_annotation_all(vec![struct_arg, fn_pat], placeholder)
-                            }
+            if let StructKind::Tuple(_) = strukt.kind() {
+                let struct_args = fn_
+                    .body()
+                    .unwrap()
+                    .syntax()
+                    .descendants()
+                    .filter(|it| syntax::ast::ArgList::can_cast(it.kind()))
+                    .flat_map(|args| args.children())
+                    .filter(|it| syntax::ast::PathExpr::can_cast(it.kind()))
+                    .enumerate()
+                    .filter_map(|(i, node)| {
+                        if trivial_constructors[i].is_none() { Some(node) } else { None }
+                    });
+                if let Some(fn_params) = fn_.param_list() {
+                    for (struct_arg, fn_param) in struct_args.zip(fn_params.params()) {
+                        if let Some(fn_pat) = fn_param.pat() {
+                            let fn_pat = fn_pat.syntax().clone();
+                            let placeholder = builder.make_placeholder_snippet(cap);
+                            editor.add_annotation_all(vec![struct_arg, fn_pat], placeholder)
                         }
                     }
                 }
-                _ => {}
             }
 
             // Add a tabstop before the name

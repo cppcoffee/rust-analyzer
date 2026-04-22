@@ -721,7 +721,7 @@ fn highlight_method_call(
     }
 
     let def_crate = func.module(sema.db).krate(sema.db);
-    let is_from_other_crate = krate.as_ref().map_or(false, |krate| def_crate != *krate);
+    let is_from_other_crate = krate.as_ref().is_some_and(|krate| def_crate != *krate);
     let is_from_builtin_crate = def_crate.is_builtin(sema.db);
     let is_public = func.visibility(sema.db) == hir::Visibility::Public;
     let is_deprecated = func.attrs(sema.db).is_deprecated();

@@ -273,7 +273,7 @@ pub fn is_pattern_cond(expr: ast::Expr) -> bool {
         ast::Expr::BinExpr(expr)
             if expr.op_kind() == Some(ast::BinaryOp::LogicOp(ast::LogicOp::And)) =>
         {
-            expr.lhs().map_or(false, is_pattern_cond) || expr.rhs().map_or(false, is_pattern_cond)
+            expr.lhs().is_some_and(is_pattern_cond) || expr.rhs().is_some_and(is_pattern_cond)
         }
         ast::Expr::ParenExpr(expr) => expr.expr().is_some_and(is_pattern_cond),
         ast::Expr::LetExpr(_) => true,

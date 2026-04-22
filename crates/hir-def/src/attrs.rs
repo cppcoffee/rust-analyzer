@@ -180,14 +180,11 @@ fn match_attr_flags(attr_flags: &mut AttrFlags, attr: ast::Meta) -> ControlFlow<
                     }
                     _ => {}
                 },
-                Some(second_segment) => match &*first_segment {
-                    "rust_analyzer" => match &*second_segment {
-                        "completions" => extract_ra_completions(attr_flags, tt),
-                        "macro_style" => extract_ra_macro_style(attr_flags, tt),
-                        _ => {}
-                    },
+                Some(second_segment) => if &*first_segment == "rust_analyzer" { match &*second_segment {
+                    "completions" => extract_ra_completions(attr_flags, tt),
+                    "macro_style" => extract_ra_macro_style(attr_flags, tt),
                     _ => {}
-                },
+                } },
             }
         }
         ast::Meta::PathMeta(attr) => {
@@ -255,16 +252,13 @@ fn match_attr_flags(attr_flags: &mut AttrFlags, attr: ast::Meta) -> ControlFlow<
                     }
                     _ => {}
                 },
-                Some(second_segment) => match &*first_segment {
-                    "rust_analyzer" => match &*second_segment {
-                        "skip" => attr_flags.insert(AttrFlags::RUST_ANALYZER_SKIP),
-                        "prefer_underscore_import" => {
-                            attr_flags.insert(AttrFlags::PREFER_UNDERSCORE_IMPORT)
-                        }
-                        _ => {}
-                    },
+                Some(second_segment) => if &*first_segment == "rust_analyzer" { match &*second_segment {
+                    "skip" => attr_flags.insert(AttrFlags::RUST_ANALYZER_SKIP),
+                    "prefer_underscore_import" => {
+                        attr_flags.insert(AttrFlags::PREFER_UNDERSCORE_IMPORT)
+                    }
                     _ => {}
-                },
+                } },
             }
         }
         _ => {}

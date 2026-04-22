@@ -208,18 +208,15 @@ impl<'a, 'db> InferenceContext<'a, 'db> {
     fn analyze_closures_in_expr(&mut self, expr: ExprId, upvars: &'db FxHashMap<ExprId, Upvars>) {
         self.store.walk_child_exprs(expr, |expr| self.analyze_closures_in_expr(expr, upvars));
 
-        match &self.store[expr] {
-            Expr::Closure { args, body, closure_kind, capture_by, .. } => {
-                self.analyze_closure(
-                    expr,
-                    args,
-                    *body,
-                    *capture_by,
-                    *closure_kind,
-                    upvars.get(&expr).map(|upvars| upvars.as_ref()).unwrap_or_default(),
-                );
-            }
-            _ => {}
+        if let Expr::Closure { args, body, closure_kind, capture_by, .. } = &self.store[expr] {
+            self.analyze_closure(
+                expr,
+                args,
+                *body,
+                *capture_by,
+                *closure_kind,
+                upvars.get(&expr).map(|upvars| upvars.as_ref()).unwrap_or_default(),
+            );
         }
     }
 

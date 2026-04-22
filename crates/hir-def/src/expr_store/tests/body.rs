@@ -608,15 +608,12 @@ const fn f(x: i32) -> i32 {
         .unwrap();
 
     let MatchArm { pat, .. } = mtch_arms[1];
-    match body[pat] {
-        Pat::Range { start, end, range_type: _ } => {
-            let hir_start = &body[start.unwrap()];
-            let hir_end = &body[end.unwrap()];
+    if let Pat::Range { start, end, range_type: _ } = body[pat] {
+        let hir_start = &body[start.unwrap()];
+        let hir_end = &body[end.unwrap()];
 
-            assert!(matches!(hir_start, Expr::Path { .. }));
-            assert!(matches!(hir_end, Expr::Path { .. }));
-        }
-        _ => {}
+        assert!(matches!(hir_start, Expr::Path { .. }));
+        assert!(matches!(hir_end, Expr::Path { .. }));
     }
 }
 

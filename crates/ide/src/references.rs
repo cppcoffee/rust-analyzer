@@ -422,7 +422,7 @@ fn is_enum_lit_name_ref(
 fn path_ends_with(path: Option<ast::Path>, name_ref: &ast::NameRef) -> bool {
     path.and_then(|path| path.segment())
         .and_then(|segment| segment.name_ref())
-        .map_or(false, |segment| segment == *name_ref)
+        .is_some_and(|segment| segment == *name_ref)
 }
 
 /// Checks if a name reference is used in a literal (constructor) context.

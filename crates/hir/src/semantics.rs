@@ -1388,10 +1388,10 @@ impl<'db> SemanticsImpl<'db> {
                         // function-like macro call
                         Either::Left(tt) => {
                             let macro_call = tt.syntax().parent().and_then(ast::MacroCall::cast)?;
-                            if tt.left_delimiter_token().map_or(false, |it| it == token) {
+                            if tt.left_delimiter_token().is_some_and(|it| it == token) {
                                 return None;
                             }
-                            if tt.right_delimiter_token().map_or(false, |it| it == token) {
+                            if tt.right_delimiter_token().is_some_and(|it| it == token) {
                                 return None;
                             }
                             let mcall = InFile::new(expansion, macro_call);

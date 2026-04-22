@@ -328,12 +328,9 @@ impl<'db> AssocItemCollector<'db> {
                     },
                 ) {
                     // FIXME: Expansion error?
-                    Ok(call_id) => match call_id.value {
-                        Some(call_id) => {
-                            self.macro_calls.push((ast_id.upcast(), call_id));
-                            self.collect_macro_items(call_id);
-                        }
-                        None => (),
+                    Ok(call_id) => if let Some(call_id) = call_id.value {
+                        self.macro_calls.push((ast_id.upcast(), call_id));
+                        self.collect_macro_items(call_id);
                     },
                     Err(_) => {
                         self.diagnostics.push(DefDiagnostic::unresolved_macro_call(

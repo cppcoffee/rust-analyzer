@@ -589,10 +589,7 @@ impl<'cx, 'db> Canonicalizer<'cx, 'db> {
             // Insert universe into the universe map. To preserve the order of the
             // universes in the value being canonicalized, we don't update the
             // universe in `info` until we have finished canonicalizing.
-            match query_state.universe_map.binary_search(&universe) {
-                Err(idx) => query_state.universe_map.insert(idx, universe),
-                Ok(_) => {}
-            }
+            if let Err(idx) = query_state.universe_map.binary_search(&universe) { query_state.universe_map.insert(idx, universe) }
         }
 
         // This code is hot. `variables` and `var_values` are usually small

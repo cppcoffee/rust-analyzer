@@ -792,21 +792,18 @@ fn match_meta_var<'t>(
             // rustc [explicitly checks the next token][1].
             // [0]: https://github.com/rust-lang/rust/issues/86730
             // [1]: https://github.com/rust-lang/rust/blob/f0c4da499/compiler/rustc_expand/src/mbe/macro_parser.rs#L576
-            match input.peek() {
-                Some(TtElement::Leaf(tt::Leaf::Ident(it))) => {
-                    let is_err = if it.is_raw.no() && matches!(expr, ExprKind::Expr2021) {
-                        it.sym == sym::underscore || it.sym == sym::let_ || it.sym == sym::const_
-                    } else {
-                        it.sym == sym::let_
-                    };
-                    if is_err {
-                        return ExpandResult::only_err(ExpandError::new(
-                            it.span,
-                            ExpandErrorKind::NoMatchingRule,
-                        ));
-                    }
+            if let Some(TtElement::Leaf(tt::Leaf::Ident(it))) = input.peek() {
+                let is_err = if it.is_raw.no() && matches!(expr, ExprKind::Expr2021) {
+                    it.sym == sym::underscore || it.sym == sym::let_ || it.sym == sym::const_
+                } else {
+                    it.sym == sym::let_
+                };
+                if is_err {
+                    return ExpandResult::only_err(ExpandError::new(
+                        it.span,
+                        ExpandErrorKind::NoMatchingRule,
+                    ));
                 }
-                _ => {}
             };
             return expect_fragment(db, input, parser::PrefixEntryPoint::Expr, delim_span)
                 .map(Fragment::Expr);

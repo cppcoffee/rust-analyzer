@@ -6567,7 +6567,7 @@ impl<'db> TypeNs<'db> {
             predicate,
         );
         let res = hir_ty::traits::next_trait_solve_in_ctxt(&infcx, goal);
-        res.map_or(false, |res| matches!(res.1, rustc_type_ir::solve::Certainty::Yes))
+        res.is_ok_and(|res| matches!(res.1, rustc_type_ir::solve::Certainty::Yes))
     }
 
     pub fn is_bool(&self) -> bool {

@@ -254,10 +254,7 @@ impl ItemTree {
             }
         }
         for item in self.big_data.values() {
-            match item {
-                BigModItem::Mod(_) => mods += 1,
-                _ => {}
-            }
+            if let BigModItem::Mod(_) = item { mods += 1 }
         }
         ItemTreeDataStats { traits, impls, mods, macro_calls, macro_rules }
     }

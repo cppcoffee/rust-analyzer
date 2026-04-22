@@ -65,7 +65,7 @@ pub(crate) fn hints(
 
         let should_hide = {
             let param_name = param_name.as_str();
-            get_segment_representation(&arg).map_or(false, |seg| match seg {
+            get_segment_representation(&arg).is_some_and(|seg| match seg {
                 Either::Left(Either::Left(argument)) => {
                     is_argument_similar_to_param_name(&argument, param_name)
                 }

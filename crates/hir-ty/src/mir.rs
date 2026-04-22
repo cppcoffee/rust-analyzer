@@ -1155,42 +1155,39 @@ impl MirBody {
                     | StatementKind::Nop => (),
                 }
             }
-            match &mut block.terminator {
-                Some(x) => match &mut x.kind {
-                    TerminatorKind::SwitchInt { discr, .. } => {
-                        for_operand(discr, &mut f, &mut self.projection_store)
-                    }
-                    TerminatorKind::FalseEdge { .. }
-                    | TerminatorKind::FalseUnwind { .. }
-                    | TerminatorKind::Goto { .. }
-                    | TerminatorKind::UnwindResume
-                    | TerminatorKind::CoroutineDrop
-                    | TerminatorKind::Abort
-                    | TerminatorKind::Return
-                    | TerminatorKind::Unreachable => (),
-                    TerminatorKind::Drop { place, .. } => {
-                        f(place, &mut self.projection_store);
-                    }
-                    TerminatorKind::DropAndReplace { place, value, .. } => {
-                        f(place, &mut self.projection_store);
-                        for_operand(value, &mut f, &mut self.projection_store);
-                    }
-                    TerminatorKind::Call { func, args, destination, .. } => {
-                        for_operand(func, &mut f, &mut self.projection_store);
-                        args.iter_mut()
-                            .for_each(|x| for_operand(x, &mut f, &mut self.projection_store));
-                        f(destination, &mut self.projection_store);
-                    }
-                    TerminatorKind::Assert { cond, .. } => {
-                        for_operand(cond, &mut f, &mut self.projection_store);
-                    }
-                    TerminatorKind::Yield { value, resume_arg, .. } => {
-                        for_operand(value, &mut f, &mut self.projection_store);
-                        f(resume_arg, &mut self.projection_store);
-                    }
-                },
-                None => (),
-            }
+            if let Some(x) = &mut block.terminator { match &mut x.kind {
+                TerminatorKind::SwitchInt { discr, .. } => {
+                    for_operand(discr, &mut f, &mut self.projection_store)
+                }
+                TerminatorKind::FalseEdge { .. }
+                | TerminatorKind::FalseUnwind { .. }
+                | TerminatorKind::Goto { .. }
+                | TerminatorKind::UnwindResume
+                | TerminatorKind::CoroutineDrop
+                | TerminatorKind::Abort
+                | TerminatorKind::Return
+                | TerminatorKind::Unreachable => (),
+                TerminatorKind::Drop { place, .. } => {
+                    f(place, &mut self.projection_store);
+                }
+                TerminatorKind::DropAndReplace { place, value, .. } => {
+                    f(place, &mut self.projection_store);
+                    for_operand(value, &mut f, &mut self.projection_store);
+                }
+                TerminatorKind::Call { func, args, destination, .. } => {
+                    for_operand(func, &mut f, &mut self.projection_store);
+                    args.iter_mut()
+                        .for_each(|x| for_operand(x, &mut f, &mut self.projection_store));
+                    f(destination, &mut self.projection_store);
+                }
+                TerminatorKind::Assert { cond, .. } => {
+                    for_operand(cond, &mut f, &mut self.projection_store);
+                }
+                TerminatorKind::Yield { value, resume_arg, .. } => {
+                    for_operand(value, &mut f, &mut self.projection_store);
+                    f(resume_arg, &mut self.projection_store);
+                }
+            } }
         }
     }
 
